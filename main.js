@@ -5,7 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const preloader = document.getElementById('preloader');
 
     // Config
-    const frameCount = 41;
+    const isMobile = window.innerWidth < 768;
+    const frameCount = isMobile ? 240 : 41;
     const frames = [];
     const currentFrame = { index: 0 };
 
@@ -15,7 +16,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const preloadImages = () => {
         for (let i = 1; i <= frameCount; i++) {
             const img = new Image();
-            img.src = `assets/frames/frame-${i.toString().padStart(2, '0')}.jpg`;
+            if (isMobile) {
+                img.src = `assets/mobile-frames/ezgif-frame-${i.toString().padStart(3, '0')}.jpg`;
+            } else {
+                img.src = `assets/frames/frame-${i.toString().padStart(2, '0')}.jpg`;
+            }
             img.onload = () => {
                 loadedCount++;
                 const progress = (loadedCount / frameCount) * 100;
