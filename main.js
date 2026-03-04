@@ -156,7 +156,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const parallaxText = document.querySelector('.parallax-text');
             const scrolled = window.scrollY;
             if (parallaxText) {
-                parallaxText.style.transform = `translateY(${scrolled * 0.3}px)`;
+                // Slower parallax for mobile to avoid overlap
+                const speed = window.innerWidth < 768 ? 0.15 : 0.3;
+                parallaxText.style.transform = `translateY(${scrolled * speed}px)`;
                 parallaxText.style.opacity = 1 - (scrolled / 500);
             }
         });

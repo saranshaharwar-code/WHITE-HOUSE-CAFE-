@@ -300,6 +300,8 @@ a {
     /* Reduced letter spacing for mobile fit */
     text-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
     line-height: 1.1;
+    white-space: nowrap;
+    /* Prevent wrapping on main title */
 }
 
 .hero-text .subtext {
@@ -846,10 +848,12 @@ a {
     }
 
     .hero-text h1 {
-        font-size: clamp(2.2rem, 8vw, 3.5rem);
-        letter-spacing: 0.15rem;
+        font-size: clamp(1.8rem, 7vw, 2.5rem);
+        /* Shrank more to force one line */
+        letter-spacing: 0.1rem;
+        /* Minimum spacing */
         margin-top: 0;
-        line-height: 1.2;
+        line-height: 1.1;
     }
 
     .hero-text .subtext {
