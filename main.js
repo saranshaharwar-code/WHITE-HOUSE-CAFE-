@@ -113,9 +113,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         heroSection.addEventListener('touchmove', (e) => {
-            handleFrameUpdate(e.touches[0].clientX);
-            // Optional: prevent scroll while swiping on hero to focus on animation
-            // e.preventDefault(); 
+            // On mobile, vertical swipe might feel more natural to "reveal" the entry
+            const rect = heroSection.getBoundingClientRect();
+            const touch = e.touches[0];
+            const y = touch.clientY - rect.top;
+            const percent = Math.max(0, Math.min(1, y / rect.height));
+
+            const index = Math.min(
+                frameCount - 1,
+                Math.floor(percent * frameCount)
+            );
+
+            if (index !== currentFrame.index && index >= 0) {
+                currentFrame.index = index;
+                render();
+            }
         }, { passive: true });
 
         // Mobile Menu Toggle
