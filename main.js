@@ -92,12 +92,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Hero Mouse Interaction
         const heroSection = document.querySelector('.hero-section');
 
-        heroSection.addEventListener('mousemove', (e) => {
+        const handleFrameUpdate = (clientX) => {
             const rect = heroSection.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const percent = x / rect.width;
+            const x = clientX - rect.left;
+            const percent = Math.max(0, Math.min(1, x / rect.width));
 
-            // Map percentage to frame index
             const index = Math.min(
                 frameCount - 1,
                 Math.floor(percent * frameCount)
@@ -107,6 +106,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentFrame.index = index;
                 render();
             }
+        };
+
+        heroSection.addEventListener('mousemove', (e) => {
+            handleFrameUpdate(e.clientX);
+        });
+
+        heroSection.addEventListener('touchmove', (e) => {
+            handleFrameUpdate(e.touches[0].clientX);
+            // Optional: prevent scroll while swiping on hero to focus on animation
+            // e.preventDefault(); 
+        }, { passive: true });
+
+        // Mobile Menu Toggle
+        const mobileToggle = document.querySelector('.mobile-toggle');
+        const mobileMenu = document.querySelector('.mobile-menu');
+        const body = document.body;
+
+        mobileToggle.addEventListener('click', () => {
+            mobileToggle.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : 'auto';
+        });
+
+        // Close menu on link click
+        const mobileLinks = document.querySelectorAll('.mobile-nav-links a');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileToggle.classList.remove('active');
+                mobileMenu.classList.remove('active');
+                body.style.overflow = 'auto';
+            });
         });
 
         // Parallax depth effect for hero text
