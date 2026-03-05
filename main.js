@@ -70,6 +70,24 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const initInteractions = () => {
+        // Autoplay on Mobile
+        if (isMobile) {
+            let lastTime = 0;
+            const fps = 30; // Frames per second
+            const interval = 1000 / fps;
+
+            const animate = (time) => {
+                const delta = time - lastTime;
+                if (delta > interval) {
+                    currentFrame.index = (currentFrame.index + 1) % frameCount;
+                    render();
+                    lastTime = time - (delta % interval);
+                }
+                requestAnimationFrame(animate);
+            };
+            requestAnimationFrame(animate);
+        }
+
         // Scroll Reveal
         const revealElements = document.querySelectorAll('.reveal-up, .reveal-up-stagger, .slide-in-right');
 
@@ -77,7 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('active');
-                    // If it's a stagger container, we could handle children here too
                 }
             });
         }, { threshold: 0.1 });
@@ -94,46 +111,29 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Hero Mouse Interaction
-        const heroSection = document.querySelector('.hero-section');
+        // Hero Interaction (Desktop only)
+        if (!isMobile) {
+            const heroSection = document.querySelector('.hero-section');
+            const handleFrameUpdate = (clientX) => {
+                const rect = heroSection.getBoundingClientRect();
+                const x = clientX - rect.left;
+                const percent = Math.max(0, Math.min(1, x / rect.width));
 
-        const handleFrameUpdate = (clientX) => {
-            const rect = heroSection.getBoundingClientRect();
-            const x = clientX - rect.left;
-            const percent = Math.max(0, Math.min(1, x / rect.width));
+                const index = Math.min(
+                    frameCount - 1,
+                    Math.floor(percent * frameCount)
+                );
 
-            const index = Math.min(
-                frameCount - 1,
-                Math.floor(percent * frameCount)
-            );
+                if (index !== currentFrame.index && index >= 0) {
+                    currentFrame.index = index;
+                    render();
+                }
+            };
 
-            if (index !== currentFrame.index && index >= 0) {
-                currentFrame.index = index;
-                render();
-            }
-        };
-
-        heroSection.addEventListener('mousemove', (e) => {
-            handleFrameUpdate(e.clientX);
-        });
-
-        heroSection.addEventListener('touchmove', (e) => {
-            // On mobile, vertical swipe might feel more natural to "reveal" the entry
-            const rect = heroSection.getBoundingClientRect();
-            const touch = e.touches[0];
-            const y = touch.clientY - rect.top;
-            const percent = Math.max(0, Math.min(1, y / rect.height));
-
-            const index = Math.min(
-                frameCount - 1,
-                Math.floor(percent * frameCount)
-            );
-
-            if (index !== currentFrame.index && index >= 0) {
-                currentFrame.index = index;
-                render();
-            }
-        }, { passive: true });
+            heroSection.addEventListener('mousemove', (e) => {
+                handleFrameUpdate(e.clientX);
+            });
+        }
 
         // Mobile Menu Toggle
         const mobileToggle = document.querySelector('.mobile-toggle');
